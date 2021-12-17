@@ -30,11 +30,22 @@ const Destructo = () => {
         _ctx.textAlign = 'left'
         _ctx.textBaseline = 'top'
         
+        var l = 0
+        var lineHeight = 24
+        function line() {
+            return l++ * lineHeight
+        }
+
         // 'debug: t=[game time] ∆[time step] ([frame rate])'
-        _ctx.fillText(`debug:  t=${_ctx.time.gameTime.toFixed(2)}s   ∆${(_ctx.time.timeStep * 1000).toFixed(2)}ms   (${(1 / _ctx.time.timeStep).toFixed(0)}fps)`, 0, 0)
+        _ctx.fillText(`debug:  t=${_ctx.time.gameTime.toFixed(2)}s   ∆${(_ctx.time.timeStep * 1000).toFixed(2)}ms   (${(1 / _ctx.time.timeStep).toFixed(0)}fps)`, 0, line())
 
         // 'keys: [pressed keys]'
-        _ctx.fillText(`keys: [${_ctx.input.down}]`, 0, 24)
+        _ctx.fillText(`keys: [${_ctx.input.down}]`, 0, line())
+        line()
+
+        // 'instructions: ' ...
+        _ctx.fillText(`instructions:`, 0, line())
+        _ctx.fillText('WASD + Q/E to adjust board transform', 0, line())
 
         // Draw debug cursor.
         var mouseX = _ctx.input.mouse.x
@@ -110,6 +121,9 @@ const Destructo = () => {
     // Game state.
     var _gameState = {}
     var _board = createDefaultBoard()
+    _board.position.x = _ctx.w * 0.25
+    _board.position.y = _ctx.h * 0.25
+    _board.size = _ctx.w * 0.5
 
     // Core game looooooop.
     function loop() {
@@ -123,7 +137,19 @@ const Destructo = () => {
         // Run debug if enabled.
         if (_debug) _ctx.drawDebug()
 
-        // Draw board.
+        // Update and draw board.
+        var boardScrollSpeed = 1
+        _ctx.input.down.forEach(key => {
+            // Scrolling:
+            if (key === 'w') _board.position.y -= boardScrollSpeed
+            if (key === 'a') _board.position.x -= boardScrollSpeed
+            if (key === 's') _board.position.y += boardScrollSpeed
+            if (key === 'd') _board.position.x += boardScrollSpeed
+            
+            // Scaling:
+            if (key === 'e') _board.size += boardScrollSpeed
+            if (key === 'q') _board.size -= boardScrollSpeed
+        })
         drawBoard(_board, _ctx)
 
         // Request next frame.
