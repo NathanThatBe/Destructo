@@ -6,7 +6,7 @@ const Destructo = () => {
     // Setup canvas and context.
     const _canvas = document.getElementById('canvas')
     const _ctx = canvas.getContext('2d')
-    
+
     _ctx.resetTime = () => {
         _ctx.time = {}
         _ctx.time.gameTime = 0
@@ -22,44 +22,6 @@ const Destructo = () => {
         _ctx.time.gameTime += timeStep
         _ctx.time.wallTime = currTime
         _ctx.time.timeStep = timeStep
-    }
-
-    _ctx.drawDebug = () => {
-        _ctx.fillStyle = COLORS.debugText
-        _ctx.font = FONTS.debug
-        _ctx.textAlign = 'left'
-        _ctx.textBaseline = 'top'
-        
-        var l = 0
-        var lineHeight = 24
-        function line() {
-            return l++ * lineHeight
-        }
-
-        // 'debug: t=[game time] ∆[time step] ([frame rate])'
-        _ctx.fillText(`debug:  t=${_ctx.time.gameTime.toFixed(2)}s   ∆${(_ctx.time.timeStep * 1000).toFixed(2)}ms   (${(1 / _ctx.time.timeStep).toFixed(0)}fps)`, 0, line())
-
-        // 'keys: [pressed keys]'
-        _ctx.fillText(`keys: [${_ctx.input.down}]`, 0, line())
-        line()
-
-        // 'instructions: ' ...
-        _ctx.fillText(`instructions:`, 0, line())
-        _ctx.fillText('WASD + Q/E to adjust board transform', 0, line())
-
-        // Draw debug cursor.
-        var mouseX = _ctx.input.mouse.x
-        var mouseY = _ctx.input.mouse.y
-        _ctx.strokeStyle = COLORS.clear
-        _ctx.fillStyle = COLORS.cursor
-        _ctx.beginPath()
-        _ctx.arc(mouseX, mouseY, 5, 0, 2*Math.PI)
-        _ctx.fill()
-        _ctx.closePath()
-
-        _ctx.fillStyle = COLORS.debugText
-        _ctx.textBaseline = 'bottom'
-        _ctx.fillText(`x: ${mouseX}, y: ${mouseY}`, mouseX, mouseY)
     }
     
     window.onresize = () => {
@@ -91,13 +53,27 @@ const Destructo = () => {
             mouse: {
                 x: 0,
                 y: 0,
+                down: false,
+                pressed: false,
             }
         }
     }
     _ctx.resetInput()  // Run once at startup.
+    _ctx.updateInput = () => {
+        _ctx.input.pressed = []
+        _ctx.input.released = []
+        _ctx.input.mouse.pressed = false
+    }
     _canvas.addEventListener('mousemove', (event) => {
         _ctx.input.mouse.x = event.offsetX
         _ctx.input.mouse.y = event.offsetY
+    })
+    _canvas.addEventListener('mousedown', (event) => {
+        _ctx.input.mouse.down = true
+        _ctx.input.mouse.pressed = true
+    })
+    _canvas.addEventListener('mouseup', (event) => {
+        _ctx.input.mouse.down = false
     })
     document.onkeydown = (event) => {
         if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(event.code) > -1) {
@@ -116,6 +92,55 @@ const Destructo = () => {
         if (ii < 0) return;
         _ctx.input.down.splice(ii, 1);
         _ctx.input.released.push(event.key);
+    }
+
+    _ctx.fillPoint = (x, y, radius) => {
+        _ctx.beginPath()
+        _ctx.arc(x, y, radius, 0, 2*Math.PI)
+        _ctx.fill()
+    }
+
+    _ctx.strokePoint = (x, y, radius) => {
+        _ctx.beginPath()
+        _ctx.arc(x, y, radius, 0, 2*Math.PI)
+        _ctx.stroke()
+    }
+    
+    _ctx.drawDebug = () => {
+        _ctx.fillStyle = COLORS.debugText
+        _ctx.font = FONTS.debug
+        _ctx.textAlign = 'left'
+        _ctx.textBaseline = 'top'
+        
+        var l = 0
+        var lineHeight = 24
+        function line() {
+            return l++ * lineHeight
+        }
+
+        // 'debug: t=[game time] ∆[time step] ([frame rate])'
+        _ctx.fillText(`debug:  t=${_ctx.time.gameTime.toFixed(2)}s   ∆${(_ctx.time.timeStep * 1000).toFixed(2)}ms   (${(1 / _ctx.time.timeStep).toFixed(0)}fps)`, 0, line())
+
+        // 'keys: [pressed keys]'
+        _ctx.fillText(`keys: [${_ctx.input.down}]`, 0, line())
+        line()
+
+        // 'instructions: ' ...
+        _ctx.fillText(`instructions:`, 0, line())
+        _ctx.fillText('WASD + Q/E to adjust board transform', 0, line())
+
+        // Draw debug cursor.
+        var mouseX = _ctx.input.mouse.x
+        var mouseY = _ctx.input.mouse.y
+        _ctx.strokeStyle = COLORS.cursor
+        _ctx.fillStyle = COLORS.cursor
+        _ctx.fillPoint(mouseX, mouseY, _ctx.input.mouse.down ? 8 : 4)
+        if (_ctx.input.mouse.pressed)
+            _ctx.strokePoint(mouseX, mouseY, 16)
+
+        _ctx.fillStyle = COLORS.debugText
+        _ctx.textBaseline = 'bottom'
+        _ctx.fillText(`x: ${mouseX}, y: ${mouseY}`, mouseX, mouseY)
     }
 
     // Game state.
@@ -153,6 +178,9 @@ const Destructo = () => {
         })
         updateBoard(_board, _ctx)
         drawBoard(_board, _ctx)
+        
+        // Update input.
+        _ctx.updateInput()
 
         // Request next frame.
         window.requestAnimationFrame(loop)

@@ -8,6 +8,7 @@ const Board = (length) => {
         position: { x: 0, y: 0 },
         length: length,
         tiles: [],
+        selections: [],
 
         // Presentation:
         size: 100,
@@ -50,12 +51,21 @@ function updateBoard(board, _ctx) {
         return (cursorX >= tileX && cursorX <= tileX + tileSize) && (cursorY >= tileY && cursorY <= tileY + tileSize)
     }
 
+    var cursorPressed = _ctx.input.mouse.down;
     board.tiles.forEach(row => {
         row.forEach(tile => {
-            if (inTile(tile)) {
+            var inside = inTile(tile)
+
+            // Update decay.
+            if (inside) {
                 tile.decay = 1
             } else {
                 tile.decay *= 0.85
+            }
+
+            // Make selections
+            if (inside && cursorPressed) {
+                board.selections.push({x: tile.x, y: tile.y})
             }
         })
     })
@@ -79,6 +89,14 @@ function drawBoard(board, _ctx) {
             _ctx.fillStyle = `rgba(255, 255, 255, ${lerp(0, 0.8, tile.decay)})`
             _ctx.fillRect(pos.x + tile.x * tileSize, pos.y + tile.y * tileSize, tileSize, tileSize)
         })
+    })
+
+    // Draw selected board tiles.
+    _ctx.fillStyle = COLORS.ship
+    board.selections.forEach(selection => {
+        var tileX = board.position.x + selection.x * tileSize + (tileSize/2)
+        var tileY = board.position.y + selection.y * tileSize + (tileSize/2)
+        _ctx.fillPoint(tileX, tileY, tileSize * 0.3)
     })
 
     // Draw board outline.
