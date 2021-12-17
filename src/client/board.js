@@ -51,7 +51,7 @@ function updateBoard(board, _ctx) {
         return (cursorX >= tileX && cursorX <= tileX + tileSize) && (cursorY >= tileY && cursorY <= tileY + tileSize)
     }
 
-    var cursorPressed = _ctx.input.mouse.down;
+    var cursorPressed = _ctx.input.mouse.pressed;
     board.tiles.forEach(row => {
         row.forEach(tile => {
             var inside = inTile(tile)
@@ -60,11 +60,12 @@ function updateBoard(board, _ctx) {
             if (inside) {
                 tile.decay = 1
             } else {
-                tile.decay *= 0.85
+                tile.decay *= 0.98
             }
 
             // Make selections
             if (inside && cursorPressed) {
+                // TODO(nthunt): Prevent duplicates.
                 board.selections.push({x: tile.x, y: tile.y})
             }
         })
@@ -86,13 +87,15 @@ function drawBoard(board, _ctx) {
             _ctx.strokeRect(pos.x + tile.x * tileSize, pos.y + tile.y * tileSize, tileSize, tileSize)
 
             // Draw fill.
-            _ctx.fillStyle = `rgba(255, 255, 255, ${lerp(0, 0.8, tile.decay)})`
+            var t = _ctx.time.gameTime
+            var decay = Math.max(tile.decay, Math.sin(tile.x + tile.y * 2 + t) * Math.cos(tile.y + t) * 0.2)
+            _ctx.fillStyle = `rgba(150, 255, 255, ${lerp(0.2, 0.95, decay)})`
             _ctx.fillRect(pos.x + tile.x * tileSize, pos.y + tile.y * tileSize, tileSize, tileSize)
         })
     })
 
     // Draw selected board tiles.
-    _ctx.fillStyle = COLORS.ship
+    _ctx.fillStyle = COLORS.selection
     board.selections.forEach(selection => {
         var tileX = board.position.x + selection.x * tileSize + (tileSize/2)
         var tileY = board.position.y + selection.y * tileSize + (tileSize/2)

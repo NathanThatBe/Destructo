@@ -210,7 +210,7 @@ const COLORS = Object.freeze({
     'debugText': '#EBBC70',
     'boardLines': '#ef959d',
     'cursor': '#ea526f',
-    'ship': '#037971',
+    'selection': '#ea526f',
 })
 
 const FONTS = Object.freeze({
