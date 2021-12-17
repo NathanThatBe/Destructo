@@ -124,6 +124,7 @@ const Destructo = () => {
     _board.position.x = _ctx.w * 0.25
     _board.position.y = _ctx.h * 0.25
     _board.size = _ctx.w * 0.5
+    console.log(_board.tiles)
 
     // Core game looooooop.
     function loop() {
@@ -150,6 +151,7 @@ const Destructo = () => {
             if (key === 'e') _board.size += boardScrollSpeed
             if (key === 'q') _board.size -= boardScrollSpeed
         })
+        updateBoard(_board, _ctx)
         drawBoard(_board, _ctx)
 
         // Request next frame.
@@ -189,4 +191,8 @@ const FONTS = Object.freeze({
 
 function currentTime() {
     return Date.now() * 0.001
+}
+
+function lerp(value0, value1, t) {
+	return value0 * (1 - t) + value1 * t;
 }
