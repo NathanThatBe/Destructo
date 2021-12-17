@@ -1,5 +1,7 @@
 'use strict'
 
+// TODO(nthunt): Rename this file; it will probably end up representing all game logic.
+
 const Board = (length) => {
     return {
         length: length
