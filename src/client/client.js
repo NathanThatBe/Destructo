@@ -163,9 +163,6 @@ const Destructo = () => {
         _ctx.fillStyle = COLORS.background
         _ctx.fillRect(0, 0, _ctx.w, _ctx.h)
 
-        // Run debug if enabled.
-        if (_debug) _ctx.drawDebug()
-
         // Update and draw board.
         var boardScrollSpeed = 1
         _ctx.input.down.forEach(key => {
@@ -181,6 +178,9 @@ const Destructo = () => {
         })
         updateBoard(_board, _ctx)
         drawBoard(_board, _ctx)
+        
+        // Run debug if enabled.
+        if (_debug) _ctx.drawDebug()
         
         // Update input.
         _ctx.updateInput()
