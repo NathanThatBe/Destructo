@@ -176,7 +176,7 @@ const Destructo = () => {
     
     // UI. TODO(nthunt): Move this.
     var _overlay = Overlay()
-    var button = OverlayButton('FIRE')
+    var button = OverlayButton('FIRE!')
     button.x = _ctx.w * 0.85
     button.y = _ctx.h * 0.90
     button.width = _ctx.w * 0.2
