@@ -86,7 +86,7 @@ function drawBoard(board, _ctx) {
             // Draw fill.
             var t = _ctx.time.gameTime
             var decay = Math.max(tile.decay, Math.sin(tile.x + tile.y * 2 + t) * Math.cos(tile.y + t) * 0.2)
-            _ctx.fillStyle = `rgba(150, 255, 255, ${lerp(0.2, 0.95, decay)})`
+            _ctx.fillStyle = `rgba(17, 138, 178, ${lerp(0.2, 0.95, decay)})`
             _ctx.fillRect(pos.x + tile.x * tileSize, pos.y + tile.y * tileSize, tileSize, tileSize)
 
             // Draw outline.

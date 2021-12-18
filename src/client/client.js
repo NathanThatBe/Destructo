@@ -1,5 +1,26 @@
 'use strict'
 
+const COLORS = Object.freeze({
+    // Generic:
+    'clear': '#00000000',
+    'white': '#FFFFFF',
+    'black': '#000000',
+    'yellow': 'rgb(255, 209, 102)',
+
+    // Specific:
+    'background': 'rgb(30, 42, 76)',
+    'text': '#eafffd',
+    'debugText': '#EBBC70',
+    'boardLines': '#ef959d',
+    'cursor': '#ea526f',
+    'selection': '#ea526f',
+})
+
+const FONTS = Object.freeze({
+    'debug': '24px Arial',
+    'button': 'bold 36px Arial',
+})
+
 const Destructo = () => {
     var _debug = true
 
@@ -152,7 +173,16 @@ const Destructo = () => {
     _board.position.x = _ctx.w * 0.25
     _board.position.y = _ctx.h * 0.25
     _board.size = _ctx.w * 0.5
-    console.log(_board.tiles)
+    
+    // UI. TODO(nthunt): Move this.
+    var _overlay = Overlay()
+    var button = OverlayButton('FIRE')
+    button.x = _ctx.w * 0.85
+    button.y = _ctx.h * 0.90
+    button.width = _ctx.w * 0.2
+    button.height = _ctx.w * 0.1
+    button.fillColor = COLORS.yellow
+    _overlay.buttons.push(button)
 
     // Core game looooooop.
     function loop() {
@@ -179,6 +209,10 @@ const Destructo = () => {
         updateBoard(_board, _ctx)
         drawBoard(_board, _ctx)
         
+        // Draw UI.
+        updateOverlay(_overlay, _ctx)
+        drawOverlay(_overlay, _ctx)
+        
         // Run debug if enabled.
         if (_debug) _ctx.drawDebug()
         
@@ -204,20 +238,6 @@ const Destructo = () => {
     _ctx.socket.emit('newGame')
 }
 Destructo()
-
-const COLORS = Object.freeze({
-    'clear': '#00000000',
-    'background': '#20142F',
-    'text': '#eafffd',
-    'debugText': '#EBBC70',
-    'boardLines': '#ef959d',
-    'cursor': '#ea526f',
-    'selection': '#ea526f',
-})
-
-const FONTS = Object.freeze({
-    'debug': '24px Arial',
-})
 
 function currentTime() {
     return Date.now() * 0.001
