@@ -65,14 +65,17 @@ const Destructo = () => {
         _ctx.input.mouse.pressed = false
     }
     _canvas.addEventListener('mousemove', (event) => {
+        event.preventDefault()
         _ctx.input.mouse.x = event.offsetX
         _ctx.input.mouse.y = event.offsetY
     })
     _canvas.addEventListener('mousedown', (event) => {
+        event.preventDefault()
         _ctx.input.mouse.down = true
         _ctx.input.mouse.pressed = true
     })
     _canvas.addEventListener('mouseup', (event) => {
+        event.preventDefault()
         _ctx.input.mouse.down = false
     })
     document.onkeydown = (event) => {
