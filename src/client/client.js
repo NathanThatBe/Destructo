@@ -187,19 +187,18 @@ const Destructo = () => {
     }
 
     // Set up socket events.
-    var socket = io()
-    socket.on('roomName', (roomName) =>{
+    _ctx.socket = io()
+    _ctx.socket.on('roomName', (roomName) =>{
+        _ctx.roonName = roomName
         document.getElementById('roomNameDisplay').innerHTML = roomName
     })
-    socket.on('gameState', (gameState) => {
+    _ctx.socket.on('startGame', (gameState) => {
         _gameState = gameState
-        console.log("Game state: ", _gameState)
-    })
-    socket.on('startGame', () => {
         loop()
     })
 
-    socket.emit('newGame')
+    // Trigger 'newGame' on client.
+    _ctx.socket.emit('newGame')
 }
 Destructo()
 

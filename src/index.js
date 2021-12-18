@@ -20,7 +20,6 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', (socket) => {
-  // TODO(nathan): Should we be using constant strings?
   socket.on('newGame', () => {
     let roomName = createRoomID(4)
     clientRooms[socket.id] = roomName;
@@ -28,9 +27,8 @@ io.on('connection', (socket) => {
 
     gameState[roomName] = GameState()
     socket.join(roomName)
-    socket.number = 1 // ?
-    socket.emit('startGame')
-    socket.emit('gameState', gameState[roomName])
+    socket.number = 1
+    socket.emit('startGame', gameState[roomName])
   })
 })
 
@@ -64,8 +62,4 @@ function testCreateRoomID() {
   console.assert(ID1.length === expectedLength);
   console.assert(ID2.length === expectedLength);
   console.assert(ID1 !== ID2);
-}
-
-function emitGameState() {
-
 }
